@@ -1,14 +1,8 @@
 <template>
-  <li
-    :class="{ selected: isSelected }"
-    role="treeitem"
-    aria-expanded="expanded"
-  >
+  <li :class="{ selected: isSelected }" role="treeitem" aria-expanded="expanded">
     <div class="node-container">
       <!-- Flecha para expandir si el nodo tiene hijos -->
-      <span v-if="hasChildren" @click.stop="toggle">{{
-        expanded ? '▼' : '▶'
-      }}</span>
+      <span v-if="hasChildren" @click="toggle">{{ expanded ? '▼' : '▶' }}</span>
 
       <!-- Checkbox para selección múltiple -->
       <input
@@ -18,8 +12,8 @@
         @click.stop="selectNode"
       />
 
-      <!-- Texto del nodo, también activa el multiselect al hacer clic -->
-      <span @click.stop="selectNode">{{ node.label }}</span>
+      <!-- Texto del nodo -->
+      <span>{{ node.label }}</span>
     </div>
 
     <!-- Mostrar hijos si el nodo está expandido -->
@@ -82,7 +76,7 @@ const isSelected = computed(() => {
   return props.selectedNodes.has(props.node.id);
 });
 
-// Maneja la selección del nodo actual
+// Maneja la selección del nodo actual solo desde el checkbox
 const selectNode = () => {
   emit('select', props.node); // Emitir el nodo actual para selección
 };
@@ -108,6 +102,6 @@ const handleSelect = (childNode) => {
 }
 
 .node-container span {
-  cursor: pointer;
+  cursor: default; /* No hace nada cuando se hace clic */
 }
 </style>

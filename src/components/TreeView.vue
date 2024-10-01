@@ -5,7 +5,7 @@
         v-for="(node, index) in treeDataReactive"
         :key="node.id"
         :node="node"
-        :selectedNodes="selectedNodeIds"
+        :selectedNodes="selectedNodes"
         :allowMultipleSelection="allowMultipleSelection"
         :enableReordering="enableReordering"
         @toggle="toggleNode"
@@ -13,7 +13,6 @@
         @dragstart="dragStart"
         @drop="dropNode"
         @dragover.prevent
-        aria-selected="selectedNodeIds.has(node.id)"
       />
     </ul>
   </div>
@@ -44,7 +43,7 @@ const emit = defineEmits(['select']);
 
 // Hacer la data reactiva
 const treeDataReactive = ref([...props.treeData]);
-const selectedNodeIds = ref(new Set()); // Set para guardar los IDs de nodos seleccionados
+const selectedNodes = ref(new Set()); // Set para guardar los objetos de nodos seleccionados
 let draggedNode = null;
 let draggedParent = null;
 
@@ -53,21 +52,23 @@ const toggleNode = (node) => {
   node.expanded = !node.expanded;
 };
 
-// Selecciona o deselecciona el nodo usando su id único
+// Selecciona o deselecciona el nodo usando el objeto completo
 const selectNode = (node) => {
   if (props.allowMultipleSelection) {
-    if (selectedNodeIds.value.has(node.id)) {
-      selectedNodeIds.value.delete(node.id); // Deseleccionar el nodo
+    // Si el nodo ya está seleccionado, lo eliminamos del Set
+    if (selectedNodes.value.has(node)) {
+      selectedNodes.value.delete(node);
     } else {
-      selectedNodeIds.value.add(node.id); // Seleccionar el nodo
+      selectedNodes.value.add(node);
     }
   } else {
-    selectedNodeIds.value.clear(); // Limpiar selección previa si no es multiselección
-    selectedNodeIds.value.add(node.id); // Seleccionar solo el nodo actual
+    // Si no se permite la selección múltiple, limpiamos el Set
+    selectedNodes.value.clear();
+    selectedNodes.value.add(node);
   }
 
-  // Emitir los IDs de los nodos seleccionados al componente padre
-  emit('select', Array.from(selectedNodeIds.value));
+  // Emitir los objetos completos de los nodos seleccionados
+  emit('select', Array.from(selectedNodes.value));
 };
 
 // Buscar el padre del nodo
@@ -95,18 +96,25 @@ const dragStart = (node, event) => {
 // Manejar el drop
 const dropNode = (targetNode, event) => {
   if (draggedNode && draggedNode !== targetNode) {
+    console.log(`Moviendo ${draggedNode.label} a ${targetNode.label}`);
+
+    // 1. Eliminar el nodo de la posición original
     if (draggedParent) {
       removeNode(draggedParent.children, draggedNode);
     } else {
-      removeNode(treeDataReactive.value, draggedNode);
+      removeNode(treeDataReactive.value, draggedNode); // Si es un nodo raíz
     }
 
+    // 2. Añadir el nodo al nuevo destino
     if (!targetNode.children) {
       targetNode.children = [];
     }
     targetNode.children.push(draggedNode);
 
+    // 3. Actualizar el estado del árbol para reflejar el cambio
     treeDataReactive.value = [...treeDataReactive.value];
+
+    console.log('Nodo movido:', draggedNode.label);
   }
 
   draggedNode = null;
