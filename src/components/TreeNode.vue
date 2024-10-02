@@ -12,8 +12,8 @@
         @click.stop="selectNode"
       />
 
-      <!-- Texto del nodo -->
-      <span>{{ node.label }}</span>
+      <!-- Texto del nodo que maneja el nuevo evento click -->
+      <span @click.stop="viewNode">{{ node.label }}</span>
     </div>
 
     <!-- Mostrar hijos si el nodo está expandido -->
@@ -27,6 +27,7 @@
         :enableReordering="enableReordering"
         @toggle="$emit('toggle', child)"
         @select="handleSelect"
+        @view="$emit('view', $event)" 
       />
     </ul>
   </li>
@@ -55,7 +56,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['toggle', 'select']);
+const emit = defineEmits(['toggle', 'select', 'view']);
 
 // Verifica si el nodo tiene hijos
 const hasChildren = computed(() => {
@@ -78,12 +79,17 @@ const isSelected = computed(() => {
 
 // Maneja la selección del nodo actual solo desde el checkbox
 const selectNode = () => {
-  emit('select', props.node); // Emitir el nodo actual para selección
+  emit('select', props.node);
 };
 
 // Maneja la selección del nodo hijo
 const handleSelect = (childNode) => {
-  emit('select', childNode); // Emitir la selección hacia el padre con el nodo hijo
+  emit('select', childNode);
+};
+
+// Maneja el clic en el label (nombre del item)
+const viewNode = () => {
+  emit('view', props.node); // Emitir el evento "view" con el objeto del nodo actual
 };
 </script>
 
@@ -102,6 +108,6 @@ const handleSelect = (childNode) => {
 }
 
 .node-container span {
-  cursor: default; /* No hace nada cuando se hace clic */
+  cursor: pointer;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="treeview" role="tree">
+  <div class="treeview">
     <ul>
       <TreeNode
         v-for="(node, index) in treeDataReactive"
@@ -10,6 +10,7 @@
         :enableReordering="enableReordering"
         @toggle="toggleNode"
         @select="selectNode"
+        @view="viewNode"
         @dragstart="dragStart"
         @drop="dropNode"
         @dragover.prevent
@@ -39,7 +40,7 @@ const props = defineProps({
 });
 
 // Emit para comunicar con el componente padre
-const emit = defineEmits(['select']);
+const emit = defineEmits(['select', 'view']); // Añadir "view" aquí
 
 // Hacer la data reactiva
 const treeDataReactive = ref([...props.treeData]);
@@ -55,20 +56,22 @@ const toggleNode = (node) => {
 // Selecciona o deselecciona el nodo usando el objeto completo
 const selectNode = (node) => {
   if (props.allowMultipleSelection) {
-    // Si el nodo ya está seleccionado, lo eliminamos del Set
     if (selectedNodes.value.has(node)) {
       selectedNodes.value.delete(node);
     } else {
       selectedNodes.value.add(node);
     }
   } else {
-    // Si no se permite la selección múltiple, limpiamos el Set
     selectedNodes.value.clear();
     selectedNodes.value.add(node);
   }
 
-  // Emitir los objetos completos de los nodos seleccionados
   emit('select', Array.from(selectedNodes.value));
+};
+
+// Manejador del evento "view" para visualizar el nodo al hacer clic en el label
+const viewNode = (node) => {
+  emit('view', node); // Propaga el evento "view" al componente padre
 };
 
 // Buscar el padre del nodo

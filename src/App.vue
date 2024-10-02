@@ -19,7 +19,7 @@ const treeData = [
             children: [
               {
                 id: 4,
-                label: 'Hoja 1.1.1.1',
+                label: 'Nodo 1.1.1.1',
                 expanded: false,
                 children: [
                   {
@@ -50,6 +50,11 @@ const treeData = [
 const handleSelectionChange = (selectedNodes) => {
   console.log('Nodos seleccionados:', selectedNodes);
 };
+
+// Manejador del evento "view" para visualizar la información del nodo
+const handleViewNode = (node) => {
+  console.log('Visualizando información del nodo:', node);
+};
 </script>
 
 <template>
@@ -58,5 +63,6 @@ const handleSelectionChange = (selectedNodes) => {
     :allowMultipleSelection="true"
     :enableReordering="false"
     @select="handleSelectionChange"
+    @view="handleViewNode"
   />
 </template>
