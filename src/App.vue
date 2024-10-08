@@ -45,6 +45,46 @@ const treeData = [
       { id: 8, label: 'Nodo 2.2', expanded: false, children: [] },
     ],
   },
+  {
+    id: 9,
+    label: 'Nodo 3',
+    expanded: false,
+    children: [
+      {
+        id: 10,
+        label: 'Nodo 3.1',
+        expanded: false,
+        children: [
+          {
+            id: 11,
+            label: 'Nodo 3.1.1',
+            expanded: false,
+            children: [
+              {
+                id: 12,
+                label: 'Nodo 3.1.1.1',
+                expanded: false,
+                children: [
+                  {
+                    id: 13,
+                    label: 'Hoja 3.1.1.1.1',
+                    expanded: false,
+                    children: [],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 14,
+        label: 'Hoja 3.2',
+        expanded: false,
+        children: [],
+      },
+    ],
+  },
 ];
 
 const handleSelectionChange = (selectedNodes) => {
@@ -66,3 +106,4 @@ const handleViewNode = (node) => {
     @view="handleViewNode"
   />
 </template>
+
