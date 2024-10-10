@@ -101,6 +101,7 @@ const handleViewNode = (node) => {
   <TreeView
     :treeData="treeData"
     :allowMultipleSelection="true"
+    enableSearch
     :enableReordering="false"
     @select="handleSelectionChange"
     @view="handleViewNode"

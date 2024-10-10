@@ -1,29 +1,36 @@
 <template>
   <div class="treeview">
+    <div v-if="enableSearch" class="search-container">
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Buscar"
+        class="search-input"
+        @input="handleSearchInput"
+      />
+    </div>
     <ul>
       <TreeNode
-        v-for="(node, index) in treeDataReactive"
+        v-for="(node, index) in visibleTreeData"
         :key="node.id"
         :node="node"
+        :isVisible="node.isVisible"
+        :expanded="node.expanded"
         :selectedNodes="selectedNodes"
         :allowMultipleSelection="allowMultipleSelection"
         :enableReordering="enableReordering"
         @toggle="toggleNode"
         @select="selectNode"
         @view="viewNode"
-        @dragstart="dragStart"
-        @drop="dropNode"
-        @dragover.prevent
       />
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import TreeNode from './TreeNode.vue';
 
-// Props del componente
 const props = defineProps({
   treeData: {
     type: Array,
@@ -37,23 +44,22 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  enableSearch: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-// Emit para comunicar con el componente padre
-const emit = defineEmits(['select', 'view']); // Añadir "view" aquí
+const emit = defineEmits(['select', 'view']);
+const treeDataReactive = ref(JSON.parse(JSON.stringify(props.treeData)));
+const selectedNodes = ref(new Set());
+const searchTerm = ref("");
 
-// Hacer la data reactiva
-const treeDataReactive = ref([...props.treeData]);
-const selectedNodes = ref(new Set()); // Set para guardar los objetos de nodos seleccionados
-let draggedNode = null;
-let draggedParent = null;
-
-// Alterna la expansión del nodo
+// Alterna la expansión del nodo y registra el cambio
 const toggleNode = (node) => {
   node.expanded = !node.expanded;
 };
 
-// Selecciona o deselecciona el nodo usando el objeto completo
 const selectNode = (node) => {
   if (props.allowMultipleSelection) {
     if (selectedNodes.value.has(node)) {
@@ -65,77 +71,45 @@ const selectNode = (node) => {
     selectedNodes.value.clear();
     selectedNodes.value.add(node);
   }
-
   emit('select', Array.from(selectedNodes.value));
 };
 
-// Manejador del evento "view" para visualizar el nodo al hacer clic en el label
 const viewNode = (node) => {
-  emit('view', node); // Propaga el evento "view" al componente padre
+  selectNode(node);
+  emit('view', node);
 };
 
-// Buscar el padre del nodo
-const findParent = (tree, targetNode) => {
-  for (const node of tree) {
-    if (node.children && node.children.includes(targetNode)) {
-      return node;
-    }
+// Filtra los nodos y ajusta visibilidad y expansión
+const filterAndExpandNodes = (nodes, term) => {
+  return nodes.map(node => {
+    const matches = node.label.toLowerCase().includes(term.toLowerCase());
+    let filteredChildren = [];
+
     if (node.children) {
-      const parent = findParent(node.children, targetNode);
-      if (parent) {
-        return parent;
-      }
+      filteredChildren = filterAndExpandNodes(node.children, term);
     }
+
+    node.isVisible = matches || filteredChildren.some(child => child.isVisible);
+    node.expanded = node.isVisible && node.children && filteredChildren.length > 0;
+
+    return { ...node, children: filteredChildren };
+  });
+};
+
+// Computed para obtener nodos visibles
+const visibleTreeData = computed(() => {
+  if (!searchTerm.value) {
+    return treeDataReactive.value;
   }
-  return null;
-};
+  return filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
+});
 
-// Manejar el drag
-const dragStart = (node, event) => {
-  draggedNode = node;
-  draggedParent = findParent(treeDataReactive.value, node);
-};
-
-// Manejar el drop
-const dropNode = (targetNode, event) => {
-  if (draggedNode && draggedNode !== targetNode) {
-    console.log(`Moviendo ${draggedNode.label} a ${targetNode.label}`);
-
-    // 1. Eliminar el nodo de la posición original
-    if (draggedParent) {
-      removeNode(draggedParent.children, draggedNode);
-    } else {
-      removeNode(treeDataReactive.value, draggedNode); // Si es un nodo raíz
-    }
-
-    // 2. Añadir el nodo al nuevo destino
-    if (!targetNode.children) {
-      targetNode.children = [];
-    }
-    targetNode.children.push(draggedNode);
-
-    // 3. Actualizar el estado del árbol para reflejar el cambio
-    treeDataReactive.value = [...treeDataReactive.value];
-
-    console.log('Nodo movido:', draggedNode.label);
-  }
-
-  draggedNode = null;
-  draggedParent = null;
-};
-
-// Función para eliminar un nodo
-const removeNode = (tree, nodeToRemove) => {
-  for (let i = 0; i < tree.length; i++) {
-    if (tree[i] === nodeToRemove) {
-      tree.splice(i, 1);
-      return;
-    }
-    if (tree[i].children) {
-      removeNode(tree[i].children, nodeToRemove);
-    }
-  }
-};
+// Observador para actualizar el árbol cuando cambia el término de búsqueda
+watch(searchTerm, () => {
+  treeDataReactive.value = JSON.parse(JSON.stringify(props.treeData)); // Reseteo de data reactiva
+  filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
+  nextTick();
+});
 </script>
 
 <style scoped>
@@ -144,7 +118,14 @@ const removeNode = (tree, nodeToRemove) => {
   padding-left: 1rem;
 }
 
-.treeview li {
-  cursor: pointer;
+.search-container {
+  margin-bottom: 10px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 </style>
