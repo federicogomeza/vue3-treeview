@@ -1,3 +1,16 @@
+<template>
+  <TreeView
+    :treeData="treeData"
+    title="Estructura"
+    :allowMultipleSelection="true"
+    :allowMultipleSelectionToggle="true"
+    :enableSearch="true"
+    :showSelectionOptions="true"
+    @select="handleSelectionChange"
+    @view="handleViewNode"
+  />
+</template>
+
 <script setup lang="ts">
 import TreeView from './components/TreeView.vue';
 
@@ -104,14 +117,3 @@ const handleViewNode = (node: any) => {
 };
 </script>
 
-<template>
-  <TreeView
-    :treeData="treeData"
-    :allowMultipleSelection="true"
-    enableSearch
-    enableSelectAll
-    :enableReordering="false"
-    @select="handleSelectionChange"
-    @view="handleViewNode"
-  />
-</template>
