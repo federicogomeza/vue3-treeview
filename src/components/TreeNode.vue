@@ -20,7 +20,7 @@
       tabindex="0"
     >
       <!-- Indicador de expansión -->
-      <span v-if="hasChildren" class="expand-icon" @click.stop="toggleNode">
+      <span v-if="hasChildren" class="expand-icon" @click.stop="expandNode">
         {{ localExpanded ? '▼' : '▶' }}
       </span>
 
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Contenedor exclusivo para el Label -->
-      <div class="label-container" @click.stop="viewNode">
+      <div class="label-container" @click.stop="handleLabelClick">
         <span class="node-label">{{ node.label }}</span>
       </div>
     </div>
@@ -51,9 +51,9 @@
         :selectedNodes="selectedNodes"
         :allowMultipleSelection="allowMultipleSelection"
         :enableReordering="enableReordering"
-        @toggle="handleToggle"
-        @select="$emit('select', $event)"
         @view="$emit('view', $event)"
+        @select="$emit('select', $event)"
+        @expand="$emit('expand', $event)"
       />
     </ul>
   </li>
@@ -89,7 +89,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['toggle', 'select', 'view']);
+const emit = defineEmits(['expand', 'select', 'view']);
 
 // Estados locales
 const localExpanded = ref(props.expanded);
@@ -105,10 +105,14 @@ watch(() => props.expanded, (newVal) => {
   localExpanded.value = newVal;
 });
 
-const toggleNode = () => {
+const expandNode = () => {
   localExpanded.value = !localExpanded.value;
-  emit('toggle', props.node);
+  emit('expand', props.node);
 };
+
+const handleLabelClick = () => {
+  emit('view', props.node);
+}
 
 const isSelected = computed(() => {
   return props.selectedNodes.has(props.node);
@@ -117,15 +121,6 @@ const isSelected = computed(() => {
 // Control de la selección mediante checkbox
 const selectNode = () => {
   emit('select', props.node);
-};
-
-// Control de vista del nodo mediante el label
-const viewNode = () => {
-  emit('view', props.node);
-};
-
-const handleToggle = (node) => {
-  emit('toggle', node);
 };
 </script>
 

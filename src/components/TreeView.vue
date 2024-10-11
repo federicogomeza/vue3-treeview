@@ -19,9 +19,9 @@
         :selectedNodes="selectedNodes"
         :allowMultipleSelection="allowMultipleSelection"
         :enableReordering="enableReordering"
-        @toggle="toggleNode"
-        @select="selectNode"
-        @view="viewNode"
+        @select="handleSelect"
+        @view="handleView"
+        @expand="handleExpand"
       />
     </ul>
   </div>
@@ -55,12 +55,7 @@ const treeDataReactive = ref(JSON.parse(JSON.stringify(props.treeData)));
 const selectedNodes = ref(new Set());
 const searchTerm = ref("");
 
-// Alterna la expansión del nodo y registra el cambio
-const toggleNode = (node) => {
-  node.expanded = !node.expanded;
-};
-
-const selectNode = (node) => {
+const handleSelect = (node) => {
   if (props.allowMultipleSelection) {
     if (selectedNodes.value.has(node)) {
       selectedNodes.value.delete(node);
@@ -74,10 +69,11 @@ const selectNode = (node) => {
   emit('select', Array.from(selectedNodes.value));
 };
 
-const viewNode = (node) => {
-  selectNode(node);
+
+const handleView = (node) => {
   emit('view', node);
 };
+
 
 // Filtra los nodos y ajusta visibilidad y expansión
 const filterAndExpandNodes = (nodes, term) => {

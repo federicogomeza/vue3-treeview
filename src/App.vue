@@ -87,12 +87,12 @@ const treeData = [
   },
 ];
 
-const handleSelectionChange = (selectedNodes) => {
+const handleSelectionChange = (selectedNodes: any) => {
   console.log('Nodos seleccionados:', selectedNodes);
 };
 
 // Manejador del evento "view" para visualizar la información del nodo
-const handleViewNode = (node) => {
+const handleViewNode = (node: any) => {
   console.log('Visualizando información del nodo:', node);
 };
 </script>
@@ -107,4 +107,3 @@ const handleViewNode = (node) => {
     @view="handleViewNode"
   />
 </template>
-
