@@ -9,6 +9,15 @@
         @input="handleSearchInput"
       />
     </div>
+
+    <div v-if="enableSelectAll" class="select-controls">
+      <label>
+        <input type="checkbox" @change="selectAllNodes($event)" />
+        Seleccionar todo
+      </label>
+      <button @click="clearSelection" class="clear-btn">Borrar selección</button>
+    </div>
+
     <ul>
       <TreeNode
         v-for="(node, index) in visibleTreeData"
@@ -48,6 +57,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  enableSelectAll: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(['select', 'view']);
@@ -55,6 +68,30 @@ const treeDataReactive = ref(JSON.parse(JSON.stringify(props.treeData)));
 const selectedNodes = ref(new Set());
 const searchTerm = ref("");
 
+// Seleccionar todos los nodos
+const selectAllNodes = (event) => {
+  selectedNodes.value.clear();
+  if (event.target.checked) {
+    const selectAll = (nodes) => {
+      nodes.forEach(node => {
+        selectedNodes.value.add(node);
+        if (node.children) {
+          selectAll(node.children);
+        }
+      });
+    };
+    selectAll(treeDataReactive.value);
+  }
+  emit('select', Array.from(selectedNodes.value));
+};
+
+// Borrar selección
+const clearSelection = () => {
+  selectedNodes.value.clear();
+  emit('select', Array.from(selectedNodes.value));
+};
+
+// Control de selección individual
 const handleSelect = (node) => {
   if (props.allowMultipleSelection) {
     if (selectedNodes.value.has(node)) {
@@ -69,30 +106,25 @@ const handleSelect = (node) => {
   emit('select', Array.from(selectedNodes.value));
 };
 
-
 const handleView = (node) => {
   emit('view', node);
 };
 
-
-// Filtra los nodos y ajusta visibilidad y expansión
+// Filtrar y expandir nodos con búsqueda
 const filterAndExpandNodes = (nodes, term) => {
   return nodes.map(node => {
     const matches = node.label.toLowerCase().includes(term.toLowerCase());
     let filteredChildren = [];
-
     if (node.children) {
       filteredChildren = filterAndExpandNodes(node.children, term);
     }
-
     node.isVisible = matches || filteredChildren.some(child => child.isVisible);
     node.expanded = node.isVisible && node.children && filteredChildren.length > 0;
-
     return { ...node, children: filteredChildren };
   });
 };
 
-// Computed para obtener nodos visibles
+// Computed para nodos visibles
 const visibleTreeData = computed(() => {
   if (!searchTerm.value) {
     return treeDataReactive.value;
@@ -100,9 +132,9 @@ const visibleTreeData = computed(() => {
   return filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
 });
 
-// Observador para actualizar el árbol cuando cambia el término de búsqueda
+// Observador para término de búsqueda
 watch(searchTerm, () => {
-  treeDataReactive.value = JSON.parse(JSON.stringify(props.treeData)); // Reseteo de data reactiva
+  treeDataReactive.value = JSON.parse(JSON.stringify(props.treeData));
   filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
   nextTick();
 });
@@ -114,7 +146,7 @@ watch(searchTerm, () => {
   padding-left: 1rem;
 }
 
-.search-container {
+.search-container, .select-controls {
   margin-bottom: 10px;
 }
 
@@ -123,5 +155,22 @@ watch(searchTerm, () => {
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.select-controls label {
+  cursor: pointer;
+}
+
+.select-controls label input {
+  margin-right: 5px;
+}
+
+.clear-btn {
+  margin-left: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

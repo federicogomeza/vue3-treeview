@@ -102,6 +102,7 @@ const handleViewNode = (node: any) => {
     :treeData="treeData"
     :allowMultipleSelection="true"
     enableSearch
+    enableSelectAll
     :enableReordering="false"
     @select="handleSelectionChange"
     @view="handleViewNode"
