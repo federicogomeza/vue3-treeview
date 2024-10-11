@@ -27,7 +27,7 @@
           type="checkbox"
           class="tree-node__checkbox"
           :checked="isSelected"
-          tabindex="-1"  
+          tabindex="-1"
           aria-label="Select Node"
         />
       </div>
@@ -163,6 +163,8 @@ const moveFocusToPrevious = () => {
   border-left: 4px solid transparent;
   cursor: pointer;
   position: relative;
+  min-height: 32px; /* Altura mínima para 1 línea de texto */
+  max-height: 64px; /* Altura máxima para textos largos */
 }
 
 .tree-node--selected {
@@ -194,6 +196,15 @@ const moveFocusToPrevious = () => {
   font-size: 14px;
   color: #1d4b87;
   font-weight: 500;
+  line-height: 1.5rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  -webkit-line-clamp: 3; 
+  text-align: left;
 }
 
 .tree-node__label:hover {
@@ -247,5 +258,13 @@ const moveFocusToPrevious = () => {
   bottom: 0;
   width: 1px;
   background-color: #ccc;
+}
+
+@media (max-width: 767px) {
+  /* Ajustes para mobile */
+  .tree-node__container {
+    min-height: 40px; /* Altura mínima para mobile */
+    max-height: 72px; /* Altura máxima para mobile */
+  }
 }
 </style>

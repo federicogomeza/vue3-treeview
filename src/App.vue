@@ -65,7 +65,7 @@ const treeData = [
     children: [
       {
         id: 10,
-        label: 'Nodo 3.1',
+        label: 'Nodo nivel dos con dos lineas de texto 3.1',
         expanded: false,
         children: [
           {
