@@ -1,14 +1,14 @@
 <template>
-  <li v-if="isVisible" :class="{ 'tree-line': hasChildren }">
+  <li v-if="isVisible" class="tree-node--line">
     <div
       :class="[
         'tree-node__container', 
         { 
-          'tree-node__container--selected': isSelected, 
-          'tree-node__container--hovered': isHovered, 
-          'tree-node__container--focused': isFocused,
-          'tree-node__container--pressed': isPressed,
-          'tree-node__container--expanded': localExpanded 
+          'tree-node--selected': isSelected, 
+          'tree-node--hovered': isHovered, 
+          'tree-node--focused': isFocused,
+          'tree-node--pressed': isPressed,
+          'tree-node--expanded': localExpanded 
         }
       ]"
       @mouseenter="isHovered = true"
@@ -19,10 +19,12 @@
       @blur="isFocused = false"
       tabindex="0"
     >
+      <!-- Indicador de expansión -->
       <span v-if="hasChildren" class="tree-node__expand-icon" @click.stop="expandNode">
         {{ localExpanded ? '▼' : '▶' }}
       </span>
 
+      <!-- Checkbox en contenedor separado -->
       <div v-if="allowMultipleSelection" class="tree-node__checkbox-container" @click.stop="selectNode">
         <input
           type="checkbox"
@@ -32,12 +34,14 @@
         />
       </div>
 
+      <!-- Contenedor exclusivo para el Label -->
       <div class="tree-node__label-container" @click.stop="handleLabelClick">
         <span class="tree-node__label">{{ node.label }}</span>
       </div>
     </div>
 
-    <ul v-if="localExpanded" class="tree-node__list">
+    <!-- Nodos hijos -->
+    <ul v-if="localExpanded" class="tree-node__children">
       <TreeNode
         v-for="(child, index) in node.children"
         :key="child.id"
@@ -122,31 +126,31 @@ const selectNode = () => {
 .tree-node__container {
   display: flex;
   align-items: center;
-  padding: 0.25rem;
+  padding: 8px;
   border-left: 4px solid transparent;
   cursor: pointer;
   position: relative;
 }
 
-.tree-node__container--selected {
+.tree-node--selected {
   background-color: #eaf1f5;
   border-left-color: #004b87;
 }
 
-.tree-node__container--pressed {
+.tree-node--pressed {
   background-color: #d0e4f1;
 }
 
-.tree-node__container--focused {
+.tree-node--focused {
   outline: 2px solid #004b87;
 }
 
-.tree-node__container--hovered {
+.tree-node--hovered {
   background-color: #f0f0f0;
 }
 
 .tree-node__checkbox-container {
-  margin-right: 0.5rem;
+  margin-right: 8px;
 }
 
 .tree-node__label-container {
@@ -156,6 +160,7 @@ const selectNode = () => {
 .tree-node__label {
   font-size: 14px;
   color: #1d4b87;
+  font-weight: 500;
 }
 
 .tree-node__label:hover {
@@ -187,19 +192,24 @@ const selectNode = () => {
 }
 
 .tree-node__expand-icon {
-  margin-right: 0.5rem;
+  margin-right: 8px;
   color: #004b87;
 }
 
-.tree-node__list {
+.tree-node__children {
   padding-left: 1.5rem;
   position: relative;
+  list-style-type: none; 
 }
 
-.tree-line::before {
+.tree-node--line {
+  list-style-type: none; 
+}
+
+.tree-node--line::before {
   content: "";
   position: absolute;
-  left: -1rem;
+  left: 19px;
   top: 0;
   bottom: 0;
   width: 1px;

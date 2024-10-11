@@ -67,9 +67,16 @@ const treeData = [
                 children: [
                   {
                     id: 13,
-                    label: 'Hoja 3.1.1.1.1',
+                    label: 'Nodo 3.1.1.1.1',
                     expanded: false,
-                    children: [],
+                    children: [
+                      {
+                        id: 14,
+                        label: 'Hoja 3.1.1.1.1.1',
+                        expanded: false,
+                        children: [],
+                      },
+                    ],
                   },
                 ],
               },
@@ -78,7 +85,7 @@ const treeData = [
         ],
       },
       {
-        id: 14,
+        id: 15,
         label: 'Hoja 3.2',
         expanded: false,
         children: [],
