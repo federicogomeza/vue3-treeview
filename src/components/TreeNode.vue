@@ -48,7 +48,6 @@
         :expanded="child.expanded || false"
         :selectedNodes="selectedNodes"
         :allowMultipleSelection="allowMultipleSelection"
-        :enableReordering="enableReordering"
         @view="$emit('view', $event)"
         @select="$emit('select', $event)"
         @expand="$emit('expand', $event)"
@@ -70,10 +69,6 @@ const props = defineProps({
     required: true,
   },
   allowMultipleSelection: {
-    type: Boolean,
-    default: false,
-  },
-  enableReordering: {
     type: Boolean,
     default: false,
   },

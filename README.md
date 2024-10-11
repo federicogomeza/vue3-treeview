@@ -86,29 +86,8 @@ const handleSelect = (selectedNodes) => {
 </script>
 ```
 
-### Con Reordenamiento de Nodos
-```vue
-<template>
-  <TreeView
-    :treeData="treeData"
-    :enableReordering="true"
-  />
-</template>
 
-<script setup>
-const treeData = [
-  {
-    id: 1,
-    label: 'Nodo 1',
-    children: [{ id: 2, label: 'Nodo 1.1' }]
-  },
-  {
-    id: 3,
-    label: 'Nodo 2'
-  }
-];
-</script>
-```
+
 
 
 ## Notas Adicionales
@@ -125,7 +104,6 @@ const treeData = [
 | `title`                    | String   | No        | -                  | Texto opcional que se muestra como título del componente. |
 | `allowMultipleSelection`   | Boolean  | No        | `false`            | Habilita la selección múltiple de nodos. |
 | `allowMultipleSelectionToggle` | Boolean | No     | `false`            | Muestra un checkbox que permite habilitar/deshabilitar la selección múltiple dinámicamente. |
-| `enableReordering`         | Boolean  | No        | `false`            | Permite el reordenamiento de nodos mediante arrastrar y soltar. |
 | `enableSearch`             | Boolean  | No        | `false`            | Muestra un campo de búsqueda para filtrar nodos dentro del árbol. |
 | `showSelectionOptions`     | Boolean  | No        | `false`            | Muestra opciones de "Seleccionar todo" y "Borrar selección" cuando la selección múltiple está habilitada. |
 

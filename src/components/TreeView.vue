@@ -41,7 +41,6 @@
         :expanded="node.expanded"
         :selectedNodes="selectedNodes"
         :allowMultipleSelection="multipleSelectionEnabled"
-        :enableReordering="enableReordering"
         @select="handleSelect"
         @view="handleView"
         @expand="handleExpand"
