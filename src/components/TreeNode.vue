@@ -160,7 +160,7 @@ const moveFocusToPrevious = () => {
   display: flex;
   align-items: center;
   padding: 8px;
-  border-left: 4px solid transparent;
+  border-left: 2px solid transparent;
   cursor: pointer;
   position: relative;
   min-height: 32px; /* Altura mínima para 1 línea de texto */
@@ -241,7 +241,7 @@ const moveFocusToPrevious = () => {
 }
 
 .tree-node__children {
-  padding-left: 1.5rem;
+  padding-left: 1.2rem;
   position: relative;
   list-style-type: none; 
 }
