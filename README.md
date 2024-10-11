@@ -1,16 +1,138 @@
-# Vue 3 + TypeScript + Vite
+# TreeView Component
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+El componente `TreeView` permite mostrar una estructura jerárquica de datos en forma de árbol con opciones de selección múltiple, búsqueda y expansión de nodos. También incluye opciones para seleccionar todos los nodos y borrar la selección.
 
-## Recommended IDE Setup
+## Ejemplos de Uso
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+### Ejemplo Básico
+```vue
+<template>
+  <TreeView :treeData="treeData" />
+</template>
 
-## Type Support For `.vue` Imports in TS
+<script setup>
+const treeData = [
+  { id: 1, label: 'Nodo 1', children: [{ id: 2, label: 'Nodo 1.1' }] },
+  { id: 3, label: 'Nodo 2' }
+];
+</script>
+```
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+### Con Título, Búsqueda y Selección Múltiple
+```vue
+<template>
+  <TreeView
+    title="Estructura"
+    :treeData="treeData"
+    :allowMultipleSelection="true"
+    enableSearch
+    @select="handleSelect"
+    @view="handleView"
+  />
+</template>
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+<script setup>
+const treeData = [
+  {
+    id: 1,
+    label: 'Nodo 1',
+    expanded: true,
+    children: [
+      { id: 2, label: 'Nodo 1.1', children: [] }
+    ]
+  },
+  { id: 3, label: 'Nodo 2', children: [] }
+];
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+const handleSelect = (selectedNodes) => {
+  console.log('Seleccionados:', selectedNodes);
+};
+
+const handleView = (node) => {
+  console.log('Visualizando:', node);
+};
+</script>
+```
+
+### Con Selección Múltiple Dinámica y Controles de Selección
+```vue
+<template>
+  <TreeView
+    title="Estructura"
+    :treeData="treeData"
+    :allowMultipleSelectionToggle="true"
+    :showSelectionOptions="true"
+    enableSearch
+    @select="handleSelect"
+  />
+</template>
+
+<script setup>
+const treeData = [
+  {
+    id: 1,
+    label: 'Nodo 1',
+    expanded: true,
+    children: [
+      { id: 2, label: 'Nodo 1.1', children: [] }
+    ]
+  },
+  { id: 3, label: 'Nodo 2', children: [] }
+];
+
+const handleSelect = (selectedNodes) => {
+  console.log('Nodos seleccionados:', selectedNodes);
+};
+</script>
+```
+
+### Con Reordenamiento de Nodos
+```vue
+<template>
+  <TreeView
+    :treeData="treeData"
+    :enableReordering="true"
+  />
+</template>
+
+<script setup>
+const treeData = [
+  {
+    id: 1,
+    label: 'Nodo 1',
+    children: [{ id: 2, label: 'Nodo 1.1' }]
+  },
+  {
+    id: 3,
+    label: 'Nodo 2'
+  }
+];
+</script>
+```
+
+
+## Notas Adicionales
+
+- **Búsqueda**: El árbol se actualiza automáticamente cuando se introduce texto en el campo de búsqueda.
+- **Selección múltiple**: Cuando se habilita, permite seleccionar más de un nodo a la vez. Con la opción `allowMultipleSelectionToggle`, el usuario puede habilitar/deshabilitar esta funcionalidad dinámicamente.
+
+
+## Props
+
+| Prop                       | Tipo     | Requerido | Valor por Defecto | Descripción |
+|----------------------------|----------|-----------|--------------------|-------------|
+| `treeData`                 | Array    | Sí        | -                  | La estructura de datos del árbol. Debe contener objetos con propiedades `id`, `label`, `expanded` (opcional) y `children` (opcional). |
+| `title`                    | String   | No        | -                  | Texto opcional que se muestra como título del componente. |
+| `allowMultipleSelection`   | Boolean  | No        | `false`            | Habilita la selección múltiple de nodos. |
+| `allowMultipleSelectionToggle` | Boolean | No     | `false`            | Muestra un checkbox que permite habilitar/deshabilitar la selección múltiple dinámicamente. |
+| `enableReordering`         | Boolean  | No        | `false`            | Permite el reordenamiento de nodos mediante arrastrar y soltar. |
+| `enableSearch`             | Boolean  | No        | `false`            | Muestra un campo de búsqueda para filtrar nodos dentro del árbol. |
+| `showSelectionOptions`     | Boolean  | No        | `false`            | Muestra opciones de "Seleccionar todo" y "Borrar selección" cuando la selección múltiple está habilitada. |
+
+## Eventos
+
+| Evento      | Descripción                                       | Argumentos |
+|-------------|---------------------------------------------------|------------|
+| `select`    | Se dispara cuando se selecciona un nodo.          | Array de nodos seleccionados |
+| `view`      | Se dispara cuando se hace clic en el label de un nodo. | Nodo visualizado |
+| `expand`    | Se dispara cuando se expande o colapsa un nodo.   | Nodo expandido o colapsado |
