@@ -1,24 +1,24 @@
 <template>
   <div class="treeview">
-    <div v-if="enableSearch" class="search-container">
+    <div v-if="enableSearch" class="treeview__search-container">
       <input
         type="text"
         v-model="searchTerm"
         placeholder="Buscar"
-        class="search-input"
+        class="treeview__search-input"
         @input="handleSearchInput"
       />
     </div>
 
-    <div v-if="enableSelectAll" class="select-controls">
-      <label>
+    <div v-if="enableSelectAll" class="treeview__select-controls">
+      <label class="treeview__select-all">
         <input type="checkbox" @change="selectAllNodes($event)" />
         Seleccionar todo
       </label>
-      <button @click="clearSelection" class="clear-btn">Borrar selección</button>
+      <button @click="clearSelection" class="treeview__clear-btn">Borrar selección</button>
     </div>
 
-    <ul>
+    <ul class="treeview__list">
       <TreeNode
         v-for="(node, index) in visibleTreeData"
         :key="node.id"
@@ -68,7 +68,6 @@ const treeDataReactive = ref(JSON.parse(JSON.stringify(props.treeData)));
 const selectedNodes = ref(new Set());
 const searchTerm = ref("");
 
-// Seleccionar todos los nodos
 const selectAllNodes = (event) => {
   selectedNodes.value.clear();
   if (event.target.checked) {
@@ -85,13 +84,11 @@ const selectAllNodes = (event) => {
   emit('select', Array.from(selectedNodes.value));
 };
 
-// Borrar selección
 const clearSelection = () => {
   selectedNodes.value.clear();
   emit('select', Array.from(selectedNodes.value));
 };
 
-// Control de selección individual
 const handleSelect = (node) => {
   if (props.allowMultipleSelection) {
     if (selectedNodes.value.has(node)) {
@@ -110,7 +107,6 @@ const handleView = (node) => {
   emit('view', node);
 };
 
-// Filtrar y expandir nodos con búsqueda
 const filterAndExpandNodes = (nodes, term) => {
   return nodes.map(node => {
     const matches = node.label.toLowerCase().includes(term.toLowerCase());
@@ -124,7 +120,6 @@ const filterAndExpandNodes = (nodes, term) => {
   });
 };
 
-// Computed para nodos visibles
 const visibleTreeData = computed(() => {
   if (!searchTerm.value) {
     return treeDataReactive.value;
@@ -132,7 +127,6 @@ const visibleTreeData = computed(() => {
   return filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
 });
 
-// Observador para término de búsqueda
 watch(searchTerm, () => {
   treeDataReactive.value = JSON.parse(JSON.stringify(props.treeData));
   filterAndExpandNodes(treeDataReactive.value, searchTerm.value);
@@ -141,31 +135,32 @@ watch(searchTerm, () => {
 </script>
 
 <style scoped>
-.treeview ul {
+.treeview__list {
   list-style-type: none;
   padding-left: 1rem;
 }
 
-.search-container, .select-controls {
+.treeview__search-container,
+.treeview__select-controls {
   margin-bottom: 10px;
 }
 
-.search-input {
+.treeview__search-input {
   width: 100%;
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.select-controls label {
+.treeview__select-all {
   cursor: pointer;
 }
 
-.select-controls label input {
+.treeview__select-all input {
   margin-right: 5px;
 }
 
-.clear-btn {
+.treeview__clear-btn {
   margin-left: 10px;
   background-color: #f5f5f5;
   border: 1px solid #ccc;

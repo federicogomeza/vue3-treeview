@@ -2,13 +2,13 @@
   <li v-if="isVisible" :class="{ 'tree-line': hasChildren }">
     <div
       :class="[
-        'node-container', 
+        'tree-node__container', 
         { 
-          selected: isSelected, 
-          'is-hovered': isHovered, 
-          'is-focused': isFocused,
-          'is-pressed': isPressed,
-          expanded: localExpanded 
+          'tree-node__container--selected': isSelected, 
+          'tree-node__container--hovered': isHovered, 
+          'tree-node__container--focused': isFocused,
+          'tree-node__container--pressed': isPressed,
+          'tree-node__container--expanded': localExpanded 
         }
       ]"
       @mouseenter="isHovered = true"
@@ -19,29 +19,25 @@
       @blur="isFocused = false"
       tabindex="0"
     >
-      <!-- Indicador de expansión -->
-      <span v-if="hasChildren" class="expand-icon" @click.stop="expandNode">
+      <span v-if="hasChildren" class="tree-node__expand-icon" @click.stop="expandNode">
         {{ localExpanded ? '▼' : '▶' }}
       </span>
 
-      <!-- Checkbox en contenedor separado -->
-      <div v-if="allowMultipleSelection" class="checkbox-container" @click.stop="selectNode">
+      <div v-if="allowMultipleSelection" class="tree-node__checkbox-container" @click.stop="selectNode">
         <input
           type="checkbox"
-          class="node-checkbox"
+          class="tree-node__checkbox"
           :checked="isSelected"
           aria-label="Select Node"
         />
       </div>
 
-      <!-- Contenedor exclusivo para el Label -->
-      <div class="label-container" @click.stop="handleLabelClick">
-        <span class="node-label">{{ node.label }}</span>
+      <div class="tree-node__label-container" @click.stop="handleLabelClick">
+        <span class="tree-node__label">{{ node.label }}</span>
       </div>
     </div>
 
-    <!-- Nodos hijos -->
-    <ul v-if="localExpanded">
+    <ul v-if="localExpanded" class="tree-node__list">
       <TreeNode
         v-for="(child, index) in node.children"
         :key="child.id"
@@ -91,7 +87,6 @@ const props = defineProps({
 
 const emit = defineEmits(['expand', 'select', 'view']);
 
-// Estados locales
 const localExpanded = ref(props.expanded);
 const isHovered = ref(false);
 const isPressed = ref(false);
@@ -118,14 +113,13 @@ const isSelected = computed(() => {
   return props.selectedNodes.has(props.node);
 });
 
-// Control de la selección mediante checkbox
 const selectNode = () => {
   emit('select', props.node);
 };
 </script>
 
 <style scoped>
-.node-container {
+.tree-node__container {
   display: flex;
   align-items: center;
   padding: 0.25rem;
@@ -134,41 +128,41 @@ const selectNode = () => {
   position: relative;
 }
 
-.node-container.selected {
+.tree-node__container--selected {
   background-color: #eaf1f5;
   border-left-color: #004b87;
 }
 
-.node-container.is-pressed {
+.tree-node__container--pressed {
   background-color: #d0e4f1;
 }
 
-.node-container.is-focused {
+.tree-node__container--focused {
   outline: 2px solid #004b87;
 }
 
-.node-container:hover {
+.tree-node__container--hovered {
   background-color: #f0f0f0;
 }
 
-.checkbox-container {
+.tree-node__checkbox-container {
   margin-right: 0.5rem;
 }
 
-.label-container {
+.tree-node__label-container {
   cursor: pointer;
 }
 
-.node-label {
+.tree-node__label {
   font-size: 14px;
   color: #1d4b87;
 }
 
-.node-label:hover {
+.tree-node__label:hover {
   color: #1a3e72;
 }
 
-.node-checkbox {
+.tree-node__checkbox {
   appearance: none;
   width: 18px;
   height: 18px;
@@ -178,12 +172,12 @@ const selectNode = () => {
   position: relative;
 }
 
-.node-checkbox:checked {
+.tree-node__checkbox:checked {
   background-color: #0078d4;
   border-color: #0078d4;
 }
 
-.node-checkbox:checked::after {
+.tree-node__checkbox:checked::after {
   content: '✔';
   position: absolute;
   top: -2px;
@@ -192,12 +186,12 @@ const selectNode = () => {
   color: white;
 }
 
-.expand-icon {
+.tree-node__expand-icon {
   margin-right: 0.5rem;
   color: #004b87;
 }
 
-ul {
+.tree-node__list {
   padding-left: 1.5rem;
   position: relative;
 }
