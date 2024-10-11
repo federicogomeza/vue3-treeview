@@ -1,5 +1,5 @@
 <template>
-  <li v-if="isVisible" class="tree-node--line">
+  <li v-if="isVisible" class="tree-node--line" role="treeitem" :aria-expanded="localExpanded" :aria-selected="isSelected" aria-haspopup="hasChildren">
     <div
       :class="[
         'tree-node__container', 
@@ -11,37 +11,35 @@
           'tree-node--expanded': localExpanded 
         }
       ]"
-      @mouseenter="isHovered = true"
-      @mouseleave="isHovered = false"
-      @mousedown="isPressed = true"
-      @mouseup="isPressed = false"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
       tabindex="0"
+      @focus="handleFocus"
+      @blur="isFocused = false"
+      @keydown="handleKeyDown"
     >
       <!-- Indicador de expansión -->
       <span v-if="hasChildren" class="tree-node__expand-icon" @click.stop="expandNode">
         {{ localExpanded ? '▼' : '▶' }}
       </span>
 
-      <!-- Checkbox en contenedor separado -->
+      <!-- Checkbox, con tabindex -1 para excluir del flujo de navegación -->
       <div v-if="allowMultipleSelection" class="tree-node__checkbox-container" @click.stop="selectNode">
         <input
           type="checkbox"
           class="tree-node__checkbox"
           :checked="isSelected"
+          tabindex="-1"  
           aria-label="Select Node"
         />
       </div>
 
-      <!-- Contenedor exclusivo para el Label -->
+      <!-- Contenedor del Label -->
       <div class="tree-node__label-container" @click.stop="handleLabelClick">
         <span class="tree-node__label">{{ node.label }}</span>
       </div>
     </div>
 
     <!-- Nodos hijos -->
-    <ul v-if="localExpanded" class="tree-node__children">
+    <ul v-if="localExpanded" class="tree-node__children" role="group">
       <TreeNode
         v-for="(child, index) in node.children"
         :key="child.id"
@@ -90,15 +88,12 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['expand', 'select', 'view']);
-
 const localExpanded = ref(props.expanded);
 const isHovered = ref(false);
 const isPressed = ref(false);
 const isFocused = ref(false);
 
-const hasChildren = computed(() => {
-  return props.node.children && props.node.children.length > 0;
-});
+const hasChildren = computed(() => props.node.children && props.node.children.length > 0);
 
 watch(() => props.expanded, (newVal) => {
   localExpanded.value = newVal;
@@ -113,12 +108,55 @@ const handleLabelClick = () => {
   emit('view', props.node);
 }
 
-const isSelected = computed(() => {
-  return props.selectedNodes.has(props.node);
-});
+const isSelected = computed(() => props.selectedNodes.has(props.node));
 
 const selectNode = () => {
   emit('select', props.node);
+};
+
+// Gestión del foco para navegación y accesibilidad
+const handleFocus = () => {
+  isFocused.value = true;
+};
+
+const handleKeyDown = (event) => {
+  switch (event.key) {
+    case 'ArrowDown':
+      moveFocusToNext();
+      break;
+    case 'ArrowUp':
+      moveFocusToPrevious();
+      break;
+    case 'ArrowRight':
+      if (hasChildren.value && !localExpanded.value) expandNode();
+      break;
+    case 'ArrowLeft':
+      if (hasChildren.value && localExpanded.value) expandNode();
+      break;
+    case 'Enter':
+    case ' ':
+      if (props.allowMultipleSelection) {
+        selectNode();
+      } else {
+        expandNode();
+      }
+      event.preventDefault();
+      break;
+  }
+};
+
+const moveFocusToNext = () => {
+  const focusableElements = document.querySelectorAll('.tree-node__container');
+  const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+  const nextElement = focusableElements[currentIndex + 1] || focusableElements[0];
+  nextElement.focus();
+};
+
+const moveFocusToPrevious = () => {
+  const focusableElements = document.querySelectorAll('.tree-node__container');
+  const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+  const prevElement = focusableElements[currentIndex - 1] || focusableElements[focusableElements.length - 1];
+  prevElement.focus();
 };
 </script>
 
