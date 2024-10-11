@@ -84,7 +84,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['select', 'view']);
+const emit = defineEmits(['select', 'view', 'expand']);
 const treeDataReactive = ref(JSON.parse(JSON.stringify(props.treeData)));
 const selectedNodes = ref(new Set());
 const searchTerm = ref("");
@@ -106,6 +106,10 @@ const handleSelect = (node) => {
 
 const handleView = (node) => {
   emit('view', node);
+};
+
+const handleExpand = (node) => {
+  emit('expand', node);
 };
 
 const toggleSelectAll = (event) => {

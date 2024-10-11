@@ -8,6 +8,7 @@
     :showSelectionOptions="true"
     @select="handleSelectionChange"
     @view="handleViewNode"
+    @expand="handleExpandNode"
   />
 </template>
 
@@ -111,9 +112,14 @@ const handleSelectionChange = (selectedNodes: any) => {
   console.log('Nodos seleccionados:', selectedNodes);
 };
 
-// Manejador del evento "view" para visualizar la información del nodo
+
 const handleViewNode = (node: any) => {
   console.log('Visualizando información del nodo:', node);
 };
+
+const handleExpandNode = (selectedNodes: any) => {
+  console.log('Nodos expandidos:', selectedNodes);
+};
+
 </script>
 
