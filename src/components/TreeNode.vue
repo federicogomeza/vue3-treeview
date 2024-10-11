@@ -1,5 +1,5 @@
 <template>
-  <li v-if="isVisible">
+  <li v-if="isVisible" :class="{ 'tree-line': hasChildren }">
     <div
       :class="[
         'node-container', 
@@ -24,21 +24,24 @@
         {{ localExpanded ? '▼' : '▶' }}
       </span>
 
-      <!-- Checkbox para selección múltiple -->
-      <input
-        v-if="allowMultipleSelection"
-        type="checkbox"
-        class="node-checkbox"
-        :checked="isSelected"
-        @click.stop="selectNode"
-      />
+      <!-- Checkbox en contenedor separado -->
+      <div v-if="allowMultipleSelection" class="checkbox-container" @click.stop="selectNode">
+        <input
+          type="checkbox"
+          class="node-checkbox"
+          :checked="isSelected"
+          aria-label="Select Node"
+        />
+      </div>
 
-      <!-- Etiqueta del nodo -->
-      <span class="node-label" @click.stop="viewNode">{{ node.label }}</span>
+      <!-- Contenedor exclusivo para el Label -->
+      <div class="label-container" @click.stop="viewNode">
+        <span class="node-label">{{ node.label }}</span>
+      </div>
     </div>
 
-    <!-- Nodos hijos, visibles solo si localExpanded es true -->
-    <ul v-if="localExpanded && hasChildren">
+    <!-- Nodos hijos -->
+    <ul v-if="localExpanded">
       <TreeNode
         v-for="(child, index) in node.children"
         :key="child.id"
@@ -94,39 +97,35 @@ const isHovered = ref(false);
 const isPressed = ref(false);
 const isFocused = ref(false);
 
-// Verifica si el nodo tiene hijos
 const hasChildren = computed(() => {
   return props.node.children && props.node.children.length > 0;
 });
 
-// Observa cambios en props.expanded para sincronizar localExpanded
 watch(() => props.expanded, (newVal) => {
   localExpanded.value = newVal;
 });
 
-// Alterna la expansión del nodo actual
 const toggleNode = () => {
   localExpanded.value = !localExpanded.value;
   emit('toggle', props.node);
 };
 
-// Verifica si el nodo está seleccionado
 const isSelected = computed(() => {
   return props.selectedNodes.has(props.node);
 });
 
-// Maneja la selección del nodo actual solo desde el checkbox
+// Control de la selección mediante checkbox
 const selectNode = () => {
   emit('select', props.node);
 };
 
-// Maneja el clic en el label (nombre del item)
+// Control de vista del nodo mediante el label
 const viewNode = () => {
   emit('view', props.node);
 };
 
 const handleToggle = (node) => {
-  emit('toggle', node); // Emite el nodo actual para que el padre decida expandir o contraer
+  emit('toggle', node);
 };
 </script>
 
@@ -137,6 +136,7 @@ const handleToggle = (node) => {
   padding: 0.25rem;
   border-left: 4px solid transparent;
   cursor: pointer;
+  position: relative;
 }
 
 .node-container.selected {
@@ -145,15 +145,23 @@ const handleToggle = (node) => {
 }
 
 .node-container.is-pressed {
-  background-color: #d0e4f1; /* Estado presionado */
+  background-color: #d0e4f1;
 }
 
 .node-container.is-focused {
-  outline: 2px solid #004b87; /* Estado focus */
+  outline: 2px solid #004b87;
 }
 
 .node-container:hover {
   background-color: #f0f0f0;
+}
+
+.checkbox-container {
+  margin-right: 0.5rem;
+}
+
+.label-container {
+  cursor: pointer;
 }
 
 .node-label {
@@ -172,9 +180,7 @@ const handleToggle = (node) => {
   background-color: #eaf1f5;
   border: 2px solid #004b87;
   border-radius: 3px;
-  display: inline-block;
   position: relative;
-  margin-right: 0.5rem;
 }
 
 .node-checkbox:checked {
@@ -198,5 +204,16 @@ const handleToggle = (node) => {
 
 ul {
   padding-left: 1.5rem;
+  position: relative;
+}
+
+.tree-line::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #ccc;
 }
 </style>
