@@ -241,7 +241,7 @@ const moveFocusToPrevious = () => {
 }
 
 .tree-node__children {
-  padding-left: 1.2rem;
+  padding-left: 18px;
   position: relative;
   list-style-type: none; 
 }
@@ -253,7 +253,7 @@ const moveFocusToPrevious = () => {
 .tree-node--line::before {
   content: "";
   position: absolute;
-  left: 19px;
+  left: 18px;
   top: 0;
   bottom: 0;
   width: 1px;
