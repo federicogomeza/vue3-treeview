@@ -114,3 +114,23 @@ const handleSelect = (selectedNodes) => {
 | `select`    | Se dispara cuando se selecciona un nodo.          | Array de nodos seleccionados |
 | `view`      | Se dispara cuando se hace clic en el label de un nodo. | Nodo visualizado |
 | `expand`    | Se dispara cuando se expande o colapsa un nodo.   | Nodo expandido o colapsado |
+
+
+# Documentación de Accesibilidad del Componente TreeView
+
+## Accesibilidad
+
+
+## Navegación por Teclado
+
+| **Tecla**          | **Función**                                                                                                         |
+|--------------------|----------------------------------------------------------------------------------------------------------------------|
+| `Tab`              | Mueve el foco al primer nodo seleccionable, si se encuentra dentro del árbol; si no, mueve el foco fuera del componente. |
+| `Shift + Tab`      | Mueve el foco fuera del componente (al elemento anterior en el orden de tabulación).                                   |
+| `Enter` o `Espacio` | Expande o contrae el nodo enfocado si tiene hijos.                                                                   |
+| `Flecha Abajo`     | Mueve el foco al siguiente nodo.                                                                                     |
+| `Flecha Arriba`    | Mueve el foco al nodo anterior.                                                                                      |
+| `Flecha Derecha`   | Expande el nodo enfocado si tiene hijos, o se mueve al primer nodo hijo.                                             |
+| `Flecha Izquierda` | Contrae el nodo enfocado si está expandido, o se mueve al nodo padre si está contraído.                              |
+
+Este cuadro proporciona una referencia rápida sobre cómo se asegura la accesibilidad en el componente TreeView, facilitando su uso mediante lectores de pantalla y navegación por teclado.
